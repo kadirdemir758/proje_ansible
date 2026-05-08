@@ -1,0 +1,31 @@
+- hosts: servers
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: AWS Sunucusuna Docker ve Compose Kur
+      apt:
+        name: ['docker.io', 'docker-compose-v2']
+        state: present
+        update_cache: yes
+
+    - name: Sunucu çökmesin diye 4GB Swap (Sanal RAM) oluştur
+      shell: |
+        if [ ! -f /swapfile ]; then
+          fallocate -l 4G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=4096
+          chmod 600 /swapfile
+          mkswap /swapfile
+          swapon /swapfile
+          echo '/swapfile none swap sw 0 0' >> /etc/fstab
+        fi
+
+    - name: Kodları sunucuya aktar
+      copy:
+        src: "{{ workspace_path }}/"
+        dest: /home/ubuntu/obilet/
+        owner: ubuntu
+
+    - name: Mikroservis orkestrasını ayağa kaldır (Bu adım 3-5 dakika sürebilir)
+      shell: |
+        cd /home/ubuntu/obilet
+        docker compose down
+        docker compose up -d --build

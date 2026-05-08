@@ -1,0 +1,30 @@
+name: CI-CD Pipeline
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Repo çek
+      uses: actions/checkout@v4
+
+    - name: Ansible kur
+      run: sudo apt install ansible -y
+
+    - name: SSH ayarlarını ve Anahtarı yapılandır
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 13.48.57.178 >> ~/.ssh/known_hosts
+
+    - name: Kusursuz Inventory Dosyasını Yarat
+      run: |
+        echo "[servers]" > inventory_kesin.ini
+        echo "sunucu1 ansible_host=13.48.57.178 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> inventory_kesin.ini
+
+    - name: Deploy
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: False
+      run: ansible-playbook -i inventory_kesin.ini ansible/deploy.yml -e "workspace_path=$GITHUB_WORKSPACE"
