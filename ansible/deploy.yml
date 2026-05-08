@@ -24,8 +24,11 @@
         dest: /home/ubuntu/obilet/
         owner: ubuntu
 
-    - name: Mikroservis orkestrasını ayağa kaldır (Bu adım 3-5 dakika sürebilir)
+    - name: Mikroservis orkestrasını ayağa kaldır (Kopmayı önleyen Async Modu)
       shell: |
         cd /home/ubuntu/obilet
         docker compose down
+        export BUILDKIT_BUILD_WORKERS=1
         docker compose up -d --build
+      async: 2400
+      poll: 15
