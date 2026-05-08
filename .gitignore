@@ -3,7 +3,7 @@ node_modules/
 .pnp
 .pnp.js
 
-# Environment Variables (ASLA commit'leme!)
+# Environment Variables 
 .env
 .env.local
 .env.development.local
@@ -69,9 +69,6 @@ coverage/
 **/.mypy_cache/
 **/.ruff_cache/
 
-# Mikroservis Çevre Değişkenleri (ASLA commit'leme!)
-.env.microservices
-
 # Alembic (migration dosyaları commit'lenir, __pycache__ değil)
 **/alembic/__pycache__/
 
@@ -81,6 +78,3 @@ kafka_data/
 zookeeper_data/
 zookeeper_logs/
 redisinsight_data/
-
-.env
-.env.microservices
