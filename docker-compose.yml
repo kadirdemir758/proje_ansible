@@ -5,10 +5,11 @@ version: '3.9'
 #  Tüm servisler: http://localhost:8000 (API Gateway) üzerinden erişilir
 #
 #  Panel Adresleri:
-#    • API Gateway  → http://localhost:8000
-#    • Kafka UI     → http://localhost:8080
-#    • pgAdmin      → http://localhost:5050  (admin@obilet.com / admin123)
-#    • RedisInsight → http://localhost:5540
+#   • API Gateway  → http://localhost:8000
+#   • Kafka UI     → http://localhost:8088
+#   • pgAdmin      → http://localhost:5050  (admin@obilet.com / admin123)
+#   • RedisInsight → http://localhost:5540
+#   • Frontend     → http://localhost:3000
 # ═══════════════════════════════════════════════════════════════
 
 services:
@@ -121,7 +122,7 @@ services:
       start_period: 30s
 
   # ─────────────────────────────────────────
-  # Kafka UI — http://localhost:8080
+  # Kafka UI — http://localhost:8088
   # ─────────────────────────────────────────
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -407,6 +408,22 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  # ─────────────────────────────────────────
+  # Frontend (Arayüz) — Kullanıcının Gördüğü Kısım
+  # ─────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: obilet_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - obilet_network
+    depends_on:
+      - api-gateway
 
 # ─────────────────────────────────────────
 # Kalıcı Veri Hacimleri
